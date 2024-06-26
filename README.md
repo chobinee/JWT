@@ -27,9 +27,16 @@
   - header
   - payload
   - sign
+- 세 부분은 Base64url 인코딩을 사용하여 별도로 인코딩됨
 
 일반적으로 다음과 같음
 > xxxxx.yyyyy.zzzzz
+
+code ver.
+```json
+const token = base64urlEncoding(header) + '.' + base64urlEncoding(payload) + '.' + base64urlEncoding(signature)
+```
+
 ### Header
 - 사용되는 서명 알고리즘과 토큰 유형의 두 부분으로 구성
 ```json
@@ -45,3 +52,10 @@
 ### payload
 
 ### Sign
+
+
+참고 링크
+
+[jwt.io](https://jwt.io/introduction)
+
+[wikipedia](https://ko.wikipedia.org/wiki/JSON_%EC%9B%B9_%ED%86%A0%ED%81%B0#cite_note-rfc7519-1)
