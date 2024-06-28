@@ -9,15 +9,9 @@
 import HelloWorld from '@/components/HelloWorld.vue'
 
 export default {
-  name: 'HomeView',
+  name: 'Home',
   components: {
     HelloWorld
   }
 }
 </script>
-
-<style>
-.home {
-  background-color:#0B0B3B
-}
-</style>
