@@ -1,5 +1,6 @@
 package com.example.jwtserver.util;
 import com.example.jwtserver.dto.MemberDto;
+import com.example.jwtserver.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtBuilder;
@@ -27,7 +28,7 @@ public class JwtUtil {
   private static final String USER_ID = "userId";
   private static final String USER_NAME = "userName";
 
-  public static String generateJwtToken(MemberDto memberDto)
+  public String generateAccessToken(MemberDto memberDto)
   {
     JwtBuilder builder = Jwts.builder()
         .setHeader(createHeader())
@@ -35,13 +36,26 @@ public class JwtUtil {
         .setSubject(String.valueOf(memberDto.getId()))
         .setIssuer("profile")
         .signWith(key, SignatureAlgorithm.HS256)
-        .setExpiration(createExpiredDate());
+        .setExpiration(createAccessTokenExpiredDate());
+
+    return builder.compact();
+  }
+
+  public String generateRefreshToken(MemberDto memberDto)
+  {
+    JwtBuilder builder = Jwts.builder()
+        .setHeader(createHeader())
+        .setClaims(createClaims(memberDto))
+        .setSubject(String.valueOf(memberDto.getId()))
+        .setIssuer("profile")
+        .signWith(key, SignatureAlgorithm.HS256)
+        .setExpiration(createRefreshTokenExpiredDate());
 
     return builder.compact();
   }
 
   // token 유효성 체크
-  public static boolean isValidToken(String token)
+  public boolean isValidToken(String token)
   {
     try {
       Claims claims = getClaimsFromToken(token);
@@ -63,16 +77,24 @@ public class JwtUtil {
     }
   }
 
-  // token 만료 시간 설정
-  private static Date createExpiredDate()
+  // accessToken 만료 시간 설정
+  private Date createAccessTokenExpiredDate()
   {
     Instant now = Instant.now();
     Instant expiryDate = now.plus(Duration.ofMinutes(5));
     return Date.from(expiryDate);
   }
 
+  // refreshToken 만료 시간 설정
+  private Date createRefreshTokenExpiredDate()
+  {
+    Instant now = Instant.now();
+    Instant expiryDate = now.plus(Duration.ofMinutes(10));
+    return Date.from(expiryDate);
+  }
+
   // jwt header 생성
-  private static Map<String, Object> createHeader()
+  private Map<String, Object> createHeader()
   {
     Map<String, Object> header = new HashMap<>();
 
@@ -84,7 +106,7 @@ public class JwtUtil {
   }
 
   // jwt claim 생성
-  private static Map<String, Object> createClaims(MemberDto memberDto)
+  private Map<String, Object> createClaims(MemberDto memberDto)
   {
     Map<String, Object> claims = new HashMap<>();
 
@@ -98,13 +120,13 @@ public class JwtUtil {
   }
 
   // token 복호화 후 claims 반환
-  private static Claims getClaimsFromToken(String token)
+  private Claims getClaimsFromToken(String token)
   {
     return Jwts.parserBuilder().setSigningKey(key)
         .build().parseClaimsJws(token).getBody();
   }
 
-  public static String getUserIdFromToken(String token)
+  public String getUserIdFromToken(String token)
   {
     Claims claims = getClaimsFromToken(token);
     return claims.get(USER_ID).toString();

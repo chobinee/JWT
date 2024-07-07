@@ -5,6 +5,7 @@ import com.example.jwtserver.dto.LoginRequestDto;
 
 public interface MemberService {
 
-  String join(MemberDto memberDto);
+  void join(MemberDto memberDto) throws Exception;
   String login(LoginRequestDto loginRequestDto);
+  MemberDto getMemberDtoById(String userId);
 }

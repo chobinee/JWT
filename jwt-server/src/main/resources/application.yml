@@ -10,4 +10,9 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: true
+logging:
+  level:
+    org.springframework.security: DEBUG
+    com.example.jwtserver.service.MemberService: DEBUG
+    com.example.jwtserver.filter.JwtAuthFilter: DEBUG
 
