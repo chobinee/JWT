@@ -50,7 +50,7 @@ public class MemberController {
     if (tokens.containsKey("code"))
     {
       String value = tokens.get("code");
-      if (value.equals("204")) return ResponseEntity.status(HttpStatus.NO_CONTENT).body("존재하지 않는 유저입니다.");
+      if (value.equals("204")) return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
       if (value.equals("400")) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("비밀번호가 틀렸습니다.");
     }
 

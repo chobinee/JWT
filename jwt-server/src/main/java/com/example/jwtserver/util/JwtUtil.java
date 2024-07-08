@@ -27,6 +27,8 @@ public class JwtUtil {
   private static final String ALGORITHM = "HS256";
   private static final String USER_ID = "userId";
   private static final String USER_NAME = "userName";
+  private static final String USER_PW = "userPassword";
+  private static final String IS_ADMIN= "isAdmin";
 
   public String generateAccessToken(MemberDto memberDto)
   {
@@ -81,7 +83,7 @@ public class JwtUtil {
   private Date createAccessTokenExpiredDate()
   {
     Instant now = Instant.now();
-    Instant expiryDate = now.plus(Duration.ofMinutes(5));
+    Instant expiryDate = now.plus(Duration.ofSeconds(5));
     return Date.from(expiryDate);
   }
 
@@ -89,7 +91,7 @@ public class JwtUtil {
   private Date createRefreshTokenExpiredDate()
   {
     Instant now = Instant.now();
-    Instant expiryDate = now.plus(Duration.ofMinutes(10));
+    Instant expiryDate = now.plus(Duration.ofSeconds(10));
     return Date.from(expiryDate);
   }
 
@@ -110,11 +112,10 @@ public class JwtUtil {
   {
     Map<String, Object> claims = new HashMap<>();
 
-    log.info("id : " + memberDto.getId());
-    log.info("name : " + memberDto.getName());
-
     claims.put(USER_ID, memberDto.getId());
     claims.put(USER_NAME, memberDto.getName());
+    claims.put(USER_PW, memberDto.getPw());
+    claims.put(IS_ADMIN, memberDto.isAdmin());
 
     return claims;
   }
@@ -130,5 +131,17 @@ public class JwtUtil {
   {
     Claims claims = getClaimsFromToken(token);
     return claims.get(USER_ID).toString();
+  }
+
+  public MemberDto getMemberDtoFromToken(String token)
+  {
+    Claims claims = getClaimsFromToken(token);
+
+    MemberDto memberDto = new MemberDto();
+    memberDto.setId(claims.get(USER_ID).toString());
+    memberDto.setName(claims.get(USER_NAME).toString());
+    memberDto.setPw(claims.get(USER_PW).toString());
+    memberDto.setAdmin(claims.get(IS_ADMIN).toString().equals("true")?true:false);
+    return memberDto;
   }
 }

@@ -26,7 +26,6 @@ public class MemberServiceImpl implements MemberService {
 
   @Override
   public void join(MemberDto memberDto) throws Exception {
-      logger.info("join start");
     if (memberRepository.existsById(memberDto.getId())) throw new Exception();
     Member member = Member.builder()
         .id(memberDto.getId())
@@ -34,9 +33,6 @@ public class MemberServiceImpl implements MemberService {
         .name(memberDto.getName())
         .admin(memberDto.isAdmin())
         .build();
-
-    logger.info("join end");
-    logger.info("member's admin : " + memberDto.isAdmin());
 
     memberRepository.save(member);
   }
@@ -54,7 +50,7 @@ public class MemberServiceImpl implements MemberService {
 
     if (!passwordEncoder.matches(loginRequestDto.getPw(), member.getPw()))
     {
-        map.put("code", "401");
+        map.put("code", "400");
         return map;
     }
 
@@ -69,6 +65,8 @@ public class MemberServiceImpl implements MemberService {
 
     Cookie cookie = new Cookie("refreshToken", refreshToken);
     cookie.setHttpOnly(true);
+    cookie.setSecure(false);
+    cookie.setPath("/");
     httpServletResponse.addCookie(cookie);
 
     map.put("accessToken", accessToken);

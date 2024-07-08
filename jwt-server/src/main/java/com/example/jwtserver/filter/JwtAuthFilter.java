@@ -1,5 +1,8 @@
 package com.example.jwtserver.filter;
 
+import com.example.jwtserver.dto.MemberDto;
+import com.example.jwtserver.entity.Member;
+import com.example.jwtserver.repository.MemberRepository;
 import com.example.jwtserver.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -12,6 +15,7 @@ import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -61,12 +65,30 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         // accessToken 유효하지 않을 경우 refreshToken 유효성 검증
         String refreshToken = Arrays.stream(cookies).filter((cookie) -> cookie.getName().equals("refreshToken"))
                 .findFirst().orElseThrow(() -> new ServletException("Refresh Token not found")).getValue();
-
+        logger.info("Refresh Token: {}", refreshToken);
         if (jwtUtil.isValidToken(refreshToken)) {
-          String userId = jwtUtil.getUserIdFromToken(refreshToken);
+          MemberDto memberDto = jwtUtil.getMemberDtoFromToken(refreshToken);
+          String newAccessToken = jwtUtil.generateAccessToken(memberDto);
 
-          // 새로운 accessToken 발급 요청 및 접근 튕김
+          response.setStatus(HttpStatus.UNAUTHORIZED.value());
+          response.setContentType("application/json");
+          response.setCharacterEncoding("UTF-8");
 
+          String jsonResponse = String.format("{\"resultCode\":\"%d\",\"accessToken\": \"%s\"}", 2, newAccessToken);
+          response.getWriter().write(jsonResponse);
+          response.getWriter().flush();
+
+          return;
+        }
+        else {
+          response.setStatus(HttpStatus.UNAUTHORIZED.value());
+          response.setContentType("application/json");
+          response.setCharacterEncoding("UTF-8");
+          String jsonResponse = String.format("{\"resultCode\":\"%d\"}", 3);
+          response.getWriter().write(jsonResponse);
+          response.getWriter().flush();
+
+          return;
         }
       }
     }

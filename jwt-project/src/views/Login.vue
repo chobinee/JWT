@@ -17,6 +17,10 @@
   </div>
 </template>
 <script>
+
+
+import axios from 'axios'
+
 export default {
   data () {
     return {
@@ -30,7 +34,32 @@ export default {
         alert('Check your input.')
         return
       }
-      alert('hello')
+      let body = {};
+      body.id = this.user_id;
+      body.pw = this.user_pw;
+
+      try {
+        axios.post('http://localhost:8080/login', JSON.stringify(body), {
+          headers: {
+            "Content-Type": `application/json`,
+          },
+          withCredentials: true
+        }).then((res) => {
+          console.log(res);
+          if (res.status === 200)
+          {
+            alert("로그인 성공!");
+            localStorage.setItem("accessToken", res.data);
+          }
+          else if (res.status === 204)
+          {
+            alert("없는 유저입니다!");
+          }
+        }).catch((err) => {if (err.response.status === 400) alert(err.response.data);});
+      }
+      catch(error) {
+        console.error(error);
+      }
     }
   }
 }
