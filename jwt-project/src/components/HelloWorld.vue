@@ -1,8 +1,7 @@
 <template>
   <div class="hello">
-    <img alt="Vue logo" src="../assets/logo.png">
+    <img alt="My code" src="../assets/myCode.png">
     <h1>{{ msg }}</h1>
-    <h2>JWT Token 뿌수기</h2>
     <a href="https://periwinkle-bedbug-640.notion.site/JWT-8ba1d60d1b474ce18890db2a1f6cbeb9?pvs=74" target="_blank">이론 정리 요기</a>
   </div>
 </template>
