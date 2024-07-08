@@ -74,7 +74,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
           response.setContentType("application/json");
           response.setCharacterEncoding("UTF-8");
 
-          String jsonResponse = String.format("{\"resultCode\":\"%d\",\"accessToken\": \"%s\"}", 2, newAccessToken);
+          int resultCode = 2;
+          String jsonResponse = String.format("{\"resultCode\":\"%d\",\"accessToken\": \"%s\"}", resultCode, newAccessToken);
+          logger.info(jsonResponse);
           response.getWriter().write(jsonResponse);
           response.getWriter().flush();
 
