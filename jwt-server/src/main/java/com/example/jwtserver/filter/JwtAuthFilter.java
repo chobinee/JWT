@@ -3,9 +3,12 @@ package com.example.jwtserver.filter;
 import com.example.jwtserver.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
+
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +28,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
     String authorizationHeader = request.getHeader("Authorization");
+    Cookie[] cookies = request.getCookies();
 
     String servletPath = request.getServletPath();
     logger.info("Processing request for path: {}", servletPath);
@@ -51,6 +55,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
           // 현재 Request의 Security Context에 접근권한 설정
           SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+        }
+      }
+      else {
+        // accessToken 유효하지 않을 경우 refreshToken 유효성 검증
+        String refreshToken = Arrays.stream(cookies).filter((cookie) -> cookie.getName().equals("refreshToken"))
+                .findFirst().orElseThrow(() -> new ServletException("Refresh Token not found")).getValue();
+
+        if (jwtUtil.isValidToken(refreshToken)) {
+          String userId = jwtUtil.getUserIdFromToken(refreshToken);
+
+          // 새로운 accessToken 발급 요청 및 접근 튕김
+
         }
       }
     }

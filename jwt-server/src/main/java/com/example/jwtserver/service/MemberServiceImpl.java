@@ -5,11 +5,15 @@ import com.example.jwtserver.dto.LoginRequestDto;
 import com.example.jwtserver.repository.MemberRepository;
 import com.example.jwtserver.entity.Member;
 import com.example.jwtserver.util.JwtUtil;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +26,7 @@ public class MemberServiceImpl implements MemberService {
 
   @Override
   public void join(MemberDto memberDto) throws Exception {
+      logger.info("join start");
     if (memberRepository.existsById(memberDto.getId())) throw new Exception();
     Member member = Member.builder()
         .id(memberDto.getId())
@@ -30,16 +35,28 @@ public class MemberServiceImpl implements MemberService {
         .admin(memberDto.isAdmin())
         .build();
 
+    logger.info("join end");
+    logger.info("member's admin : " + memberDto.isAdmin());
+
     memberRepository.save(member);
   }
 
   @Override
-  public String login(LoginRequestDto loginRequestDto) {
-    logger.info("hello");
+  public Map<String, String> login(LoginRequestDto loginRequestDto, HttpServletResponse httpServletResponse) {
     Member member = memberRepository.findMemberById(loginRequestDto.getId());
-    if (member == null) return "404";
+    Map<String, String> map = new HashMap<>();
 
-    if (!passwordEncoder.matches(loginRequestDto.getPw(), member.getPw())) return "400";
+    if (member == null)
+    {
+        map.put("code", "204");
+        return map;
+    }
+
+    if (!passwordEncoder.matches(loginRequestDto.getPw(), member.getPw()))
+    {
+        map.put("code", "401");
+        return map;
+    }
 
     MemberDto memberDto = new MemberDto();
     memberDto.setId(member.getId());
@@ -49,7 +66,15 @@ public class MemberServiceImpl implements MemberService {
 
     String accessToken = jwtUtil.generateAccessToken(memberDto);
     String refreshToken = jwtUtil.generateRefreshToken(memberDto);
-    return accessToken;
+
+    Cookie cookie = new Cookie("refreshToken", refreshToken);
+    cookie.setHttpOnly(true);
+    httpServletResponse.addCookie(cookie);
+
+    map.put("accessToken", accessToken);
+    map.put("refreshToken", refreshToken);
+
+    return map;
   }
 
   @Override

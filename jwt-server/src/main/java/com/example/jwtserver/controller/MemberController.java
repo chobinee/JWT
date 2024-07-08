@@ -9,13 +9,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,10 +43,18 @@ public class MemberController {
   }
 
   @PostMapping("/login")
-  public ResponseEntity<String> login(@Valid @RequestBody LoginRequestDto loginRequestDto)
+  public ResponseEntity login(@Valid @RequestBody LoginRequestDto loginRequestDto, HttpServletResponse httpServletResponse)
   {
-    String result = memberService.login(loginRequestDto);
-    return ResponseEntity.status(HttpStatus.OK).body(result);
+    Map<String, String> tokens = memberService.login(loginRequestDto, httpServletResponse);
+
+    if (tokens.containsKey("code"))
+    {
+      String value = tokens.get("code");
+      if (value.equals("204")) return ResponseEntity.status(HttpStatus.NO_CONTENT).body("존재하지 않는 유저입니다.");
+      if (value.equals("400")) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("비밀번호가 틀렸습니다.");
+    }
+
+    return ResponseEntity.status(HttpStatus.OK).body(tokens.get("accessToken"));
   }
 
   @GetMapping("/home")
