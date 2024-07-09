@@ -51,7 +51,7 @@ public class MemberController {
     {
       String value = tokens.get("code");
       if (value.equals("204")) return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-      if (value.equals("400")) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      if (value.equals("400")) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("비밀번호가 틀립니다!");
     }
 
     return ResponseEntity.status(HttpStatus.OK).body(tokens.get("accessToken"));

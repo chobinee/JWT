@@ -4,7 +4,7 @@ spring:
   datasource:
     url: jdbc:mariadb://localhost:3306/jwt_db
     username: root
-    password:
+    password: dbsafer00
     driver-class-name: org.mariadb.jdbc.Driver
   jpa:
     hibernate:

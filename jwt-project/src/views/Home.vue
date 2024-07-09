@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <HelloWorld msg="웹플랫폼2팀 로그인 과제 구현"/>
-    <h3>유저 정보</h3>
+    <h3>User 정보</h3>
     <div v-if="homeData">
       <p>ID: {{ homeData.id }}</p>
       <p>PW: {{ homeData.pw }}</p>
@@ -33,15 +33,15 @@ export default {
     fetchHomeData() {
       const accessToken = localStorage.getItem('accessToken');
       if (!accessToken) {
-        alert("로그인이 필요합니다!");
+        swal({title: '401 Unauthorized, NEED_LOGIN', text: '로그인이 필요합니다!', icon: 'error'});
         this.$router.push('/');
       } else {
         getMyHome(accessToken).then(data => {
           this.homeData = data;
         }).catch(error => {
-          if (error == 2) alert("accessToken 만료! refreshToken으로 재발급하였습니다.")
+          if (error == 2) swal({title: '401 Unauthorized, EXPIRED_ACC_TOKEN', text: 'Access token이 만료되어 Refresh token으로 재발급하였습니다.', icon: 'error'});
           else if (error == 3){
-            alert("refreshToken 만료! 재로그인하세요.");
+            swal({title: '401 Unauthorized, EXPIRED_REF_TOKEN', text: 'Refresh token이 만료되었습니다! 재로그인이 필요합니다.', icon: 'error'});
             localStorage.removeItem("userId");
             localStorage.removeItem("isLoggedin");
             localStorage.removeItem("accessToken");

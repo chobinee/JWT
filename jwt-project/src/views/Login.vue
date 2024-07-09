@@ -42,7 +42,7 @@ export default {
   methods: {
     fnLogin () {
       if (this.userId === '' || this.userPw === '') {
-        alert('Check your input.')
+        swal({title: 'check your input!', text: 'ID와 PW를 입력해주세요!', icon: 'error'});
         return
       }
       let body = {};
@@ -59,7 +59,7 @@ export default {
           console.log(res);
           if (res.status === 200)
           {
-            alert("로그인 성공!");
+            swal({title: '200 OK', text: '로그인 성공', icon: 'success'});
             this.isLoggedin = true;
             localStorage.setItem("isLoggedin", true);
             localStorage.setItem("userId", this.userId);
@@ -67,15 +67,18 @@ export default {
           }
           else if (res.status === 204)
           {
-            alert("없는 유저입니다!");
+            swal({title: '204 No Content', text: '존재하지 않는 유저입니다.', icon: 'success'});
           }
-        }).catch((err) => {if (err.response.status === 400) alert(err.response.data);});
+        }).catch((err) => {
+          if (err.response.status === 400)
+            swal({title: '400 Bad Request', text: err.response.data, icon: 'error'})});
       }
       catch(error) {
         console.error(error);
       }
     },
     fnLogout() {
+      swal({title: 'OK', text: '로그아웃 성공', icon: 'success'});
       localStorage.removeItem("accessToken");
       localStorage.removeItem("isLoggedin");
       localStorage.removeItem("userId");
