@@ -31,15 +31,15 @@ public class WebSecurityConfig {
   private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
   @Bean
-  public CorsConfigurationSource corsConfigurationSource() {
+  public CorsConfigurationSource corsConfigurationSource() { //cors 설정
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(Arrays.asList("http://localhost:5050")); // 허용할 출처
-    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE")); // 허용할 HTTP 메서드
-    configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type")); // 허용할 헤더
-    configuration.setAllowCredentials(true); // 쿠키 허용 여부
+    configuration.setAllowedOrigins(Arrays.asList("http://localhost:5050"));
+    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+    configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+    configuration.setAllowCredentials(true);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", configuration); // 모든 경로에 대해 CORS 설정 적용
+    source.registerCorsConfiguration("/**", configuration);
     return source;
   }
 

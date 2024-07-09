@@ -36,6 +36,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     String servletPath = request.getServletPath();
     logger.info("Processing request for path: {}", servletPath);
+    // endpoint가 login일 경우 다음 필터로 pass
     if ("/login".equals(servletPath)) {
       logger.info("Skipping JWT filter for /login path");
       filterChain.doFilter(request, response);
@@ -66,6 +67,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String refreshToken = Arrays.stream(cookies).filter((cookie) -> cookie.getName().equals("refreshToken"))
                 .findFirst().orElseThrow(() -> new ServletException("Refresh Token not found")).getValue();
         logger.info("Refresh Token: {}", refreshToken);
+        // refreshToken이 유효하면 새로운 accessToken과 resultCode 2 발급
         if (jwtUtil.isValidToken(refreshToken)) {
           MemberDto memberDto = jwtUtil.getMemberDtoFromToken(refreshToken);
           String newAccessToken = jwtUtil.generateAccessToken(memberDto);
@@ -82,6 +84,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
           return;
         }
+        // refreshToken이 유효하지 않으면 resultCode 3 발급
         else {
           response.setStatus(HttpStatus.UNAUTHORIZED.value());
           response.setContentType("application/json");

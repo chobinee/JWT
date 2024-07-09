@@ -30,6 +30,7 @@ public class JwtUtil {
   private static final String USER_PW = "userPassword";
   private static final String IS_ADMIN= "isAdmin";
 
+  //accessToken 발급
   public String generateAccessToken(MemberDto memberDto)
   {
     JwtBuilder builder = Jwts.builder()
@@ -43,6 +44,7 @@ public class JwtUtil {
     return builder.compact();
   }
 
+  //refreshToken 발급
   public String generateRefreshToken(MemberDto memberDto)
   {
     JwtBuilder builder = Jwts.builder()
@@ -127,12 +129,14 @@ public class JwtUtil {
         .build().parseClaimsJws(token).getBody();
   }
 
+  //token에 있는 claim 정보로 userId 가져옴
   public String getUserIdFromToken(String token)
   {
     Claims claims = getClaimsFromToken(token);
     return claims.get(USER_ID).toString();
   }
 
+  //token에 있는 claim 정보로 memberDto 가져옴
   public MemberDto getMemberDtoFromToken(String token)
   {
     Claims claims = getClaimsFromToken(token);
