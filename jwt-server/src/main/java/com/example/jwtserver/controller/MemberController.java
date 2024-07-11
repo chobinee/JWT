@@ -55,7 +55,10 @@ public class MemberController {
 	 * @return ResponseEntity
 	 */
 	@PostMapping("/login")
-	public ResponseEntity login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse httpServletResponse) {
+	public ResponseEntity login(
+		@RequestBody LoginRequestDto loginRequestDto
+		, HttpServletResponse httpServletResponse
+	) {
 		try {
 			// login
 			String token = memberService.login(loginRequestDto, httpServletResponse);

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 /**
  * Member entity
  */
-@Entity //todo. setter 있나,,,?
+@Entity
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor

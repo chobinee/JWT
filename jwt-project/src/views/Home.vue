@@ -52,8 +52,8 @@ export default {
 					});
 
 				}
-				//error catch
 			}).catch((err) => {
+				//error catch
 				//status가 401일 경우
 				if (err.response.status === 401) {
 					//accessToken 만료, refresh 토큰 유효한 경우
@@ -63,8 +63,8 @@ export default {
 						localStorage.setItem('accessToken', newAccessToken);
 
 					}
-					// 이외 경우 에러처리
 					else {
+					// 이외 경우 에러처리
 						swal({
 							title: '500 Internal Server Error',
 							text: '서버 오류입니다!',
@@ -72,8 +72,8 @@ export default {
 						});
 					}
 					throw err.response.data.resultCode;
-					//status가 401 아닐 경우 500 에러처리
 				} else {
+					//status가 401 아닐 경우 500 에러처리
 					swal({
 						title: '500 Internal Server Error',
 						text: '서버 오류입니다!',
@@ -86,9 +86,9 @@ export default {
 		//accessToken 검증
 		validateAccessToken() {
 			const accessToken = localStorage.getItem('accessToken');
-			//localStorage에 accessToken이 없으면
 			if (!accessToken) {
-				//로그인 필요
+			//localStorage에 accessToken이 없으면
+				//로그인 필요 알림
 				swal({
 					title: '401 Unauthorized, NEED_LOGIN',
 					text: '로그인이 필요합니다!',
@@ -97,17 +97,17 @@ export default {
 				//root로 돌아감
 				this.$router.push('/');
 
-				//accessToken이 저장되어 있으면
 			} else {
+				//accessToken이 저장되어 있으면
 				//home api 호출
 				this.getMyHome(accessToken)
-					//data 있을 경우 homeData에 저장
 					.then((data) => {
+					//data 있을 경우 homeData에 저장
 					this.homeData = data;
-					//error일 경우
 				}).catch((resultCode) => {
-					//accessToken 만료, refreshToken 유효 시
+					//error일 경우
 					if (resultCode == 2) {
+					//accessToken 만료, refreshToken 유효 시
 						//accessToken 재발급 알림
 						swal({
 							title: '401 Unauthorized, EXPIRED_ACC_TOKEN',
@@ -115,8 +115,8 @@ export default {
 							icon: 'error'
 						});
 
-						//accessToken 만료, refreshToken 만료 시
 					} else if (resultCode == 3) {
+						//accessToken 만료, refreshToken 만료 시
 						//재로그인 알림
 						swal({
 							title: '401 Unauthorized, EXPIRED_REF_TOKEN',
@@ -128,8 +128,8 @@ export default {
 						localStorage.removeItem('isLoggedin');
 						localStorage.removeItem('accessToken');
 
-						//resultCode가 2, 3이 아닐 경우
 					} else {
+						//resultCode가 2, 3이 아닐 경우
 						//서버 에러
 						swal({
 							title: '500 Internal Server Error',

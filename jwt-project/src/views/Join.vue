@@ -78,8 +78,8 @@ export default {
 						this.$router.push('/');
 
 					}
-					// 회원가입 실패 시
 				}).catch((err) => {
+					// 회원가입 실패 시
 					swal({
 						title: 'Error!',
 						text: err.response.data,
@@ -87,8 +87,8 @@ export default {
 					});
 
 				})
-				//join api 호출 실패 시
 			} catch (error) {
+				//join api 호출 실패 시
 				console.error(error);
 
 			}

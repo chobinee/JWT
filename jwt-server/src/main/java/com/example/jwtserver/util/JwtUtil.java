@@ -31,12 +31,21 @@ public class JwtUtil {
 	private static final String USER_PW = "userPassword";
 	private static final String IS_ADMIN = "isAdmin";
 
-	//token 발급
-	public String generateToken(MemberDto memberDto, String type) {
+	/**
+	 * token 발급
+	 *
+	 * @param memberDto
+	 * @param type
+	 * @return
+	 */
+	public String generateToken(MemberDto memberDto, String type) throws IllegalArgumentException {
 		Date expiredDate = null;
 
-		//todo. memberDto, type null 처리
+		//인자가 null 값으로 들어왔을 경우
+		if (memberDto == null || type == null) {
+			throw new IllegalArgumentException("memberDto and type are required");
 
+		}
 		//accessToken일 경우
 		if ("access".equals(type)) {
 			expiredDate = createTokenExpiredDate(Duration.ofSeconds(10));
@@ -47,15 +56,18 @@ public class JwtUtil {
 
 			//다른 type일 경우
 		} else {
-			// todo. throw 하되 예외 좀더 구분
-			return null;
+			throw new IllegalArgumentException("type is not valid");
 
 		}
 
-		//todo. 엔터
 		//token build
 		JwtBuilder builder = Jwts.builder()
-				.setHeader(createHeader()).setClaims(createClaims(memberDto)).setSubject(String.valueOf(memberDto.getId())).setIssuer("profile").signWith(key, SignatureAlgorithm.HS256).setExpiration(expiredDate);
+			.setHeader(createHeader())
+			.setClaims(createClaims(memberDto))
+			.setSubject(String.valueOf(memberDto.getId()))
+			.setIssuer("profile")
+			.signWith(key, SignatureAlgorithm.HS256)
+			.setExpiration(expiredDate);
 
 		// 압축 & 서명해서 return
 		return builder.compact();
@@ -68,40 +80,33 @@ public class JwtUtil {
 	 * @return : 유효성(boolean)
 	 */
 	public boolean isValidToken(String token) {
-		try {
-			Claims claims = getClaimsFromToken(token);
-			log.info(claims.toString());
-			return true;
+		Claims claims = getClaimsFromToken(token);
 
-		} catch (ExpiredJwtException expiredJwtException) {
-			log.error("Token Expired", expiredJwtException);
+		// claims가 null일 경우 return null
+		if (claims == null) {
+			return false;
 
-		} catch (UnsupportedJwtException unsupportedJwtException) {
-			log.error("Token Unsupported", unsupportedJwtException);
-
-		} catch (MalformedJwtException malformedJwtException) {
-			log.error("Token is invalid", malformedJwtException);
-
-		} catch (SignatureException signatureException) {
-			log.error("Signature is invalid", signatureException);
-
-		} catch (IllegalArgumentException illegalArgumentException) {
-			log.error("Illegal argument", illegalArgumentException);
-
-		} catch (Exception e) {
-			log.error("Unexpected error", e);
 		}
-		return false;
+		return true;
 	}
 
-	// accessToken 만료 시간 설정
+	/**
+	 * accessToken 만료 시간 설정
+	 *
+	 * @param duration : 현재 시각에 더해질 만료 시간
+	 * @return 만료 시간
+	 */
 	private Date createTokenExpiredDate(Duration duration) {
 		Instant now = Instant.now();
 		Instant expiryDate = now.plus(duration);
 		return Date.from(expiryDate);
 	}
 
-	// jwt header 생성
+	/**
+	 * jwt header 생성
+	 *
+	 * @return 생성한 header
+	 */
 	private Map<String, Object> createHeader() {
 		Map<String, Object> header = new HashMap<>();
 
@@ -112,7 +117,12 @@ public class JwtUtil {
 		return header;
 	}
 
-	// jwt claim 생성
+	/**
+	 * user 정보를 담은 claims 생성
+	 *
+	 * @param memberDto
+	 * @return 생성된 claims
+	 */
 	private Map<String, Object> createClaims(MemberDto memberDto) {
 		Map<String, Object> claims = new HashMap<>();
 
@@ -124,71 +134,80 @@ public class JwtUtil {
 		return claims;
 	}
 
-	// token 복호화 후 claims 반환
-	// todo. enter!
-	private Claims getClaimsFromToken(String token) throws ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException, IllegalArgumentException {
-		return Jwts.parserBuilder()
+	/**
+	 * token 복호화 후 claim 반환
+	 *
+	 * @param token
+	 * @return Claims, null
+	 */
+	private Claims getClaimsFromToken(String token) {
+		try {
+			Claims claims = Jwts.parserBuilder()
 				.setSigningKey(key)
 				.build()
 				.parseClaimsJws(token)
 				.getBody();
+
+			return claims;
+		} catch (ExpiredJwtException expiredJwtException) {
+			log.error("Token Expired", expiredJwtException);
+
+		} catch (UnsupportedJwtException unsupportedJwtException) {
+			log.error("Token Unsupported", unsupportedJwtException);
+
+		} catch (MalformedJwtException malformedJwtException) {
+			log.error("Token is invalid", malformedJwtException);
+
+		} catch (SignatureException signatureException) {
+			log.error("Signature is invalid", signatureException);
+
+		} catch (IllegalArgumentException illegalArgumentException) {
+			log.error("Illegal argument", illegalArgumentException);
+
+		} catch (Exception e) {
+			log.error("Unexpected error", e);
+
+		}
+		return null;
 	}
 
-	//token에 있는 claim 정보로 userId 가져옴
+	/**
+	 * token에 있는 claim 정보로 userId 가져옴
+	 *
+	 * @param token
+	 * @return claims, null
+	 */
 	public String getUserIdFromToken(String token) {
-		try {
-			Claims claims = getClaimsFromToken(token);
-			return claims.get(USER_ID).toString();
-
-		} catch (ExpiredJwtException expiredJwtException) {
-			log.error("Token Expired", expiredJwtException);
-
-		} catch (UnsupportedJwtException unsupportedJwtException) {
-			log.error("Token Unsupported", unsupportedJwtException);
-
-		} catch (MalformedJwtException malformedJwtException) {
-			log.error("Token is invalid", malformedJwtException);
-
-		} catch (SignatureException signatureException) {
-			log.error("Signature is invalid", signatureException);
-
-		} catch (IllegalArgumentException illegalArgumentException) {
-			log.error("Illegal argument", illegalArgumentException);
-
-		} catch (Exception e) {
-			log.error("Unexpected error", e);
+		Claims claims = getClaimsFromToken(token);
+		// claims가 null일 경우 return null
+		if (claims == null) {
+			return null;
 
 		}
-		return null;
+		return claims.get(USER_ID).toString();
 	}
 
-	//token에 있는 claim 정보로 memberDto 가져옴
+	/**
+	 * token에 있는 claim 정보로 memberDto 가져옴
+	 *
+	 * @param token
+	 * @return memberDto, null
+	 */
 	public MemberDto getMemberDtoFromToken(String token) {
-		try {
-			Claims claims = getClaimsFromToken(token);
-			MemberDto memberDto = MemberDto.builder().id(claims.get(USER_ID).toString()).pw(claims.get(USER_PW).toString()).name(claims.get(USER_NAME).toString()).admin(claims.get(IS_ADMIN).toString().equals("true")).build();
-
-			return memberDto;
-
-		} catch (ExpiredJwtException expiredJwtException) {
-			log.error("Token Expired", expiredJwtException);
-
-		} catch (UnsupportedJwtException unsupportedJwtException) {
-			log.error("Token Unsupported", unsupportedJwtException);
-
-		} catch (MalformedJwtException malformedJwtException) {
-			log.error("Token is invalid", malformedJwtException);
-
-		} catch (SignatureException signatureException) {
-			log.error("Signature is invalid", signatureException);
-
-		} catch (IllegalArgumentException illegalArgumentException) {
-			log.error("Illegal argument", illegalArgumentException);
-
-		} catch (Exception e) {
-			log.error("Unexpected error", e);
+		Claims claims = getClaimsFromToken(token);
+		// claims가 null일 경우 return null
+		if (claims == null) {
+			return null;
 
 		}
-		return null;
+		//memberDto build
+		MemberDto memberDto = MemberDto.builder()
+			.id(claims.get(USER_ID).toString())
+			.pw(claims.get(USER_PW).toString())
+			.name(claims.get(USER_NAME).toString())
+			.admin(claims.get(IS_ADMIN).toString().equals("true"))
+			.build();
+
+		return memberDto;
 	}
 }

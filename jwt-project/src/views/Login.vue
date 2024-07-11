@@ -82,8 +82,8 @@ export default {
 						localStorage.setItem('userId', this.userId);
 						localStorage.setItem('accessToken', res.data);
 
-						//response status가 204일 시
 					} else if (res.status === 204) {
+						//response status가 204일 시
 						//존재하지 않는 유저 알림
 						swal({
 							title: '204 No Content',
@@ -91,8 +91,8 @@ export default {
 							icon: 'success'
 						});
 
-						//이외의 경우 에러처리
 					} else {
+						//이외의 경우 에러처리
 						swal({
 							title: '500 Internal Server Error',
 							text: '서버 오류입니다!',
@@ -100,10 +100,10 @@ export default {
 						});
 
 					}
-					//response가 error일 시
 				}).catch((err) => {
-					//error status가 400일 시
+					//response가 error일 시
 					if (err.response.status === 400) {
+						//error status가 400일 시
 						//bad request 알림
 						swal({
 							title: '400 Bad Request',
@@ -111,8 +111,8 @@ export default {
 							icon: 'error'
 						});
 
-						//400 아닐 경우 에러처리
 					} else {
+						//400 아닐 경우 에러처리
 						swal({
 							title: '500 Internal Server Error',
 							text: '서버 오류입니다!',

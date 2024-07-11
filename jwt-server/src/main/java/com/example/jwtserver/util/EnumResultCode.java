@@ -1,5 +1,5 @@
 package com.example.jwtserver.util;
-import lombok.AllArgsConstructor;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

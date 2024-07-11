@@ -52,60 +52,65 @@ public class MemberService {
 	 * @param httpServletResponse
 	 * @return token
 	 */
-	public String login(LoginRequestDto loginRequestDto, HttpServletResponse httpServletResponse) throws EntityNotFoundException, Exception {
-		//loginRequestDto에 있는 id로 User 조회해서 받아옴
-		Member member = memberRepository.findMemberById(loginRequestDto.getId());
+	public String login(LoginRequestDto loginRequestDto, HttpServletResponse httpServletResponse) throws Exception {
+		try {
+			//loginRequestDto에 있는 id로 User 조회해서 받아옴
+			Member member = memberRepository.findMemberById(loginRequestDto.getId());
 
-		//없을 시 throw
-		if (member == null) {
-			throw new EntityNotFoundException();
+			//없을 시 throw
+			if (member == null) {
+				throw new EntityNotFoundException();
 
+			}
+
+			//password 틀릴 시 throw
+			if (!passwordEncoder.matches(loginRequestDto.getPw(), member.getPw())) {
+				throw new EntityNotFoundException();
+
+			}
+
+			//memberDto build
+			MemberDto memberDto = MemberDto.builder()
+				.id(member.getId())
+				.pw(member.getPw())
+				.name(member.getName())
+				.admin(member.isAdmin()).build();
+
+			//jwtToken 생성
+			String accessToken = jwtUtil.generateToken(memberDto, "access");
+			String refreshToken = jwtUtil.generateToken(memberDto, "refresh");
+
+			//token null일 시
+			if (accessToken == null || refreshToken == null) {
+				throw new Exception("Token create error");
+
+			}
+
+			//cookie 생성 후 refreshToken 저장
+			Cookie cookie = new Cookie("refreshToken", refreshToken);
+			cookie.setHttpOnly(true);
+			cookie.setSecure(false);
+			cookie.setPath("/");
+			httpServletResponse.addCookie(cookie);
+
+			return accessToken;
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			throw new IllegalArgumentException();
 		}
-
-		//password 틀릴 시 throw
-		if (!passwordEncoder.matches(loginRequestDto.getPw(), member.getPw())) {
-			throw new EntityNotFoundException();
-
-		}
-
-		//memberDto build
-		MemberDto memberDto = MemberDto.builder()
-			.id(member.getId())
-			.pw(member.getPw())
-			.name(member.getName())
-			.admin(member.isAdmin()).build();
-
-		//jwtToken 생성
-		String accessToken = jwtUtil.generateToken(memberDto, "access");
-		String refreshToken = jwtUtil.generateToken(memberDto, "refresh");
-
-		//token null일 시
-		if (accessToken == null || refreshToken == null) {
-			throw new Exception("Token create error");
-
-		}
-
-		//cookie 생성 후 refreshToken 저장
-		Cookie cookie = new Cookie("refreshToken", refreshToken);
-		cookie.setHttpOnly(true);
-		cookie.setSecure(false);
-		cookie.setPath("/");
-		httpServletResponse.addCookie(cookie);
-
-		return accessToken;
 	}
 
 	/**
 	 * @param userId
 	 * @return memberDto
 	 */
-	public MemberDto getMemberDtoById(String userId) throws Exception {
+	public MemberDto getMemberDtoById(String userId) throws EntityNotFoundException {
 		Member member = memberRepository.findMemberById(userId);
 
 		//member 못 받아올 경우 throw
 		if (member == null) {
-			//todo. 적절한 Exception throw
-			throw new Exception("User not found");
+			throw new EntityNotFoundException();
 
 		}
 

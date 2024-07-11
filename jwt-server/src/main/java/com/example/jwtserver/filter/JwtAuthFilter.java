@@ -82,43 +82,60 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			}
 			// UserDetails, Password, Role -> 접근권한 인증 Token 생성
 			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-				new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+				new UsernamePasswordAuthenticationToken(
+					userDetails
+					, null
+					, userDetails.getAuthorities()
+				);
 
 			// 현재 Request의 Security Context에 접근권한 설정
 			SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 
 		} else {
 			// accessToken 유효하지 않을 경우 refreshToken 유효성 검증
-			String refreshToken = Arrays.stream(cookies).filter((cookie) -> cookie.getName().equals("refreshToken"))
-				.findFirst().orElseThrow(() -> new ServletException("Refresh Token not found")).getValue();
+			String refreshToken = Arrays
+				.stream(cookies)
+				.filter((cookie) -> cookie.getName().equals("refreshToken"))
+				.findFirst().orElseThrow(() -> new ServletException("Refresh Token not found"))
+				.getValue();
 
 			// refreshToken이 유효하다면
 			if (jwtUtil.isValidToken(refreshToken)) {
-				//token으로 부터 memberDto 받아옴
-				MemberDto memberDto = jwtUtil.getMemberDtoFromToken(refreshToken);
-				//새로운 accessToken 발급
-				String newAccessToken = jwtUtil.generateToken(memberDto, "access");
+				try {
+					//token으로 부터 memberDto 받아옴
+					MemberDto memberDto = jwtUtil.getMemberDtoFromToken(refreshToken);
+					if (memberDto == null) {
+						throw new ServletException("Invalid JWT token");
 
-				//accessToken 발급에 문제가 있다면 throw
-				if (newAccessToken == null) {
-					throw new ServletException("Invalid JWT Creation");
+					}
+					//새로운 accessToken 발급
+					String newAccessToken = jwtUtil.generateToken(memberDto, "access");
+
+					//accessToken 발급에 문제가 있다면 throw
+					if (newAccessToken == null) {
+						throw new ServletException("Invalid JWT Creation");
+
+					}
+
+					//response setting
+					response.setStatus(HttpStatus.UNAUTHORIZED.value());
+					response.setContentType("application/json");
+					response.setCharacterEncoding("UTF-8");
+
+					//jsonObject 생성 (EXPIRED_ACC_TOKEN)
+					JSONObject jsonObject = new JSONObject();
+					jsonObject.put("resultCode", EnumResultCode.EXPIRED_ACC_TOKEN.getCode());
+					jsonObject.put("accessToken", newAccessToken);
+
+					//response에 반영
+					response.getWriter().write(jsonObject.toString());
+					response.getWriter().flush();
+
+					// token 생성의 인자가 잘못됐을 경우
+				} catch (IllegalArgumentException illegalArgumentException) {
+					throw new ServletException("Illegal Argument Error");
 
 				}
-
-				//response setting
-				response.setStatus(HttpStatus.UNAUTHORIZED.value());
-				response.setContentType("application/json");
-				response.setCharacterEncoding("UTF-8");
-
-				//jsonObject 생성 (EXPIRED_ACC_TOKEN)
-				JSONObject jsonObject = new JSONObject();
-				jsonObject.put("resultCode", EnumResultCode.EXPIRED_ACC_TOKEN.getCode());
-				jsonObject.put("accessToken", newAccessToken);
-
-				//response에 반영
-				response.getWriter().write(jsonObject.toString());
-				response.getWriter().flush();
-
 			}
 			// refreshToken이 유효하지 않으면
 			else {
@@ -137,6 +154,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 			}
 			return;
+
 		}
 
 		filterChain.doFilter(request, response); // 다음 필터로 넘기기

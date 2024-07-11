@@ -33,6 +33,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 	 */
 	@Override
 	public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
+		//id로 user 받아옴
 		Member member = memberRepository.findMemberById(id);
 		if (member == null) {
 			throw new UsernameNotFoundException("해당하는 유저가 없습니다.");
