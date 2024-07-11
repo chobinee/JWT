@@ -50,23 +50,23 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 		String servletPath = request.getServletPath();
 
-		// endpoint가 login일 경우 다음 필터로 pass
 		if ("/login".equals(servletPath)) {
+		    // endpoint가 login일 경우 다음 필터로 pass
 			log.info("Skipping JWT filter for /login path");
 			filterChain.doFilter(request, response);
 			return;
 
 		}
 
-		//authorizationHeader 없거나 Bearer로 시작하지 않는 경우 throw
 		if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+		    //authorizationHeader 없거나 Bearer로 시작하지 않는 경우 throw
 			throw new ServletException("No JWT token found");
 
 		}
 
 		String accessToken = authorizationHeader.substring(7);
-		// JWT 유효성 검증
 		if (jwtUtil.isValidToken(accessToken)) {
+		    // JWT 유효성 검증
 			//accessToken에서 userId 가져옴
 			String userId = jwtUtil.getUserIdFromToken(accessToken);
 			if (userId == null) {
@@ -99,8 +99,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 				.findFirst().orElseThrow(() -> new ServletException("Refresh Token not found"))
 				.getValue();
 
-			// refreshToken이 유효하다면
 			if (jwtUtil.isValidToken(refreshToken)) {
+			    // refreshToken이 유효하다면
 				try {
 					//token으로 부터 memberDto 받아옴
 					MemberDto memberDto = jwtUtil.getMemberDtoFromToken(refreshToken);
@@ -111,8 +111,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 					//새로운 accessToken 발급
 					String newAccessToken = jwtUtil.generateToken(memberDto, "access");
 
-					//accessToken 발급에 문제가 있다면 throw
 					if (newAccessToken == null) {
+					    //accessToken 발급에 문제가 있다면 throw
 						throw new ServletException("Invalid JWT Creation");
 
 					}
@@ -131,14 +131,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 					response.getWriter().write(jsonObject.toString());
 					response.getWriter().flush();
 
-					// token 생성의 인자가 잘못됐을 경우
 				} catch (IllegalArgumentException illegalArgumentException) {
+					// token 생성의 인자가 잘못됐을 경우
 					throw new ServletException("Illegal Argument Error");
 
 				}
 			}
-			// refreshToken이 유효하지 않으면
 			else {
+			    // refreshToken이 유효하지 않으면
 				//response setting
 				response.setStatus(HttpStatus.UNAUTHORIZED.value());
 				response.setContentType("application/json");
@@ -156,7 +156,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			return;
 
 		}
+        // 다음 필터로 넘기기
+		filterChain.doFilter(request, response);
 
-		filterChain.doFilter(request, response); // 다음 필터로 넘기기
 	}
 }

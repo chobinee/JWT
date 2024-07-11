@@ -14,7 +14,10 @@
 		</div>
 		<div>
 			<label>이름</label>
-			<input v-model="userName" type="text"/>
+			<input
+				v-model="userName"
+				type="text"
+			/>
 		</div>
 		<button type="submit">회원가입</button>
 	</form>
@@ -33,8 +36,8 @@ export default {
 	},
 	methods: {
 		fnJoin() {
-			//정보가 모두 기입되지 않았을 경우
 			if (this.userId === '' || this.userPw === '' || this.userName === '') {
+				//정보가 모두 기입되지 않았을 경우
 				swal({
 					title: 'check your input!',
 					text: '정보를 모두 입력해주세요!',
@@ -43,8 +46,8 @@ export default {
 				return;
 
 			}
-			//비밀번호와 비밀번호 확인란 입력이 다를 경우
 			if (this.pwConfirm !== this.userPw) {
+				//비밀번호와 비밀번호 확인란 입력이 다를 경우
 				swal({
 					title: 'check your password!',
 					text: '비밀번호와 비밀번호 확인란 입력이 다릅니다!',
@@ -68,8 +71,8 @@ export default {
 					},
 					withCredentials: true
 				}).then((res) => {
-					// 회원가입 성공 시
 					if (res.status === 201) {
+						// 회원가입 성공 시
 						swal({
 							title: '201 Created',
 							text: '회원가입 성공',

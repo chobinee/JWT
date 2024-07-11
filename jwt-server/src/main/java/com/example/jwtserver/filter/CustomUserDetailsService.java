@@ -36,6 +36,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 		//id로 user 받아옴
 		Member member = memberRepository.findMemberById(id);
 		if (member == null) {
+            //member null일 경우 throw
 			throw new UsernameNotFoundException("해당하는 유저가 없습니다.");
 		}
 

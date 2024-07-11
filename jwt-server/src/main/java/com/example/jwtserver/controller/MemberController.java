@@ -40,8 +40,8 @@ public class MemberController {
 			memberService.join(memberDto);
 			return ResponseEntity.status(HttpStatus.CREATED).body("회원 가입 성공");
 
-			// join 실패 시
 		} catch (Exception e) {
+			// join 실패 시
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원 가입 실패");
 
 		}
@@ -93,7 +93,6 @@ public class MemberController {
 				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
 			}
-
 			//인증자 정보에서 userDetail 받아옴
 			UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 			String userId = userDetails.getUsername();
@@ -103,8 +102,8 @@ public class MemberController {
 			//정상적일 경우 ok
 			return ResponseEntity.status(HttpStatus.OK).body(memberDto);
 
-			//memberDto 못 받아왔을 경우 catch
 		} catch (Exception e) {
+			//memberDto 못 받아왔을 경우 catch
 			//이미 인증이 성공했는데 member 못 받아왔다면 Server error
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 

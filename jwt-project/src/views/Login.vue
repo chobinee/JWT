@@ -7,11 +7,20 @@
 				@submit.prevent="fnLogin"
 			>
 				<p>
-					<input v-model="userId" placeholder="Enter your ID"><br>
+					<input
+						v-model="userId"
+						placeholder="Enter your ID"
+					>
 				</p>
+				<br>
 				<p>
-					<input v-model="userPw" type="password" placeholder="Enter your password"><br>
+					<input
+						v-model="userPw"
+						type="password"
+						placeholder="Enter your password"
+					>
 				</p>
+				<br>
 				<p>
 					<button type="submit">Login</button>
 					<button @click=join()>Join</button>
@@ -37,8 +46,8 @@ export default {
 		}
 	},
 	created() {
-		//로그인 되어있는지 확인 후 userId 가져옴
 		if (this.isLoggedin) {
+			//로그인 되어있는지 확인 후 userId 가져옴
 			this.userId = localStorage.getItem('userId');
 
 		}
@@ -46,8 +55,8 @@ export default {
 	methods: {
 		//로그인
 		fnLogin() {
-			//id, pw가 둘다 입력되지 않았을 때
 			if (this.userId === '' || this.userPw === '') {
+				//id, pw가 둘다 입력되지 않았을 때
 				swal({
 					title: 'check your input!',
 					text: 'ID와 PW를 입력해주세요!',
@@ -69,8 +78,8 @@ export default {
 					},
 					withCredentials: true
 				}).then((res) => {
-					//response status가 200일 시
 					if (res.status === 200) {
+						//response status가 200일 시
 						swal({
 							title: '200 OK',
 							text: '로그인 성공',
@@ -122,8 +131,8 @@ export default {
 					}
 
 				});
-				//login 요청 실패 시 error
 			} catch (error) {
+				//login 요청 실패 시 error
 				console.error(error);
 
 			}

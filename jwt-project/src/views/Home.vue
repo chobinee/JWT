@@ -54,17 +54,17 @@ export default {
 				}
 			}).catch((err) => {
 				//error catch
-				//status가 401일 경우
 				if (err.response.status === 401) {
-					//accessToken 만료, refresh 토큰 유효한 경우
+					//status가 401일 경우
 					if (err.response.data.resultCode == 2) {
+						//accessToken 만료, refresh 토큰 유효한 경우
 						//data에서 accessToken 가져와서 localStorage에 저장
 						const newAccessToken = err.response.data.accessToken;
 						localStorage.setItem('accessToken', newAccessToken);
 
 					}
 					else {
-					// 이외 경우 에러처리
+						// 이외 경우 에러처리
 						swal({
 							title: '500 Internal Server Error',
 							text: '서버 오류입니다!',
@@ -87,7 +87,7 @@ export default {
 		validateAccessToken() {
 			const accessToken = localStorage.getItem('accessToken');
 			if (!accessToken) {
-			//localStorage에 accessToken이 없으면
+				//localStorage에 accessToken이 없으면
 				//로그인 필요 알림
 				swal({
 					title: '401 Unauthorized, NEED_LOGIN',
@@ -107,7 +107,7 @@ export default {
 				}).catch((resultCode) => {
 					//error일 경우
 					if (resultCode == 2) {
-					//accessToken 만료, refreshToken 유효 시
+						//accessToken 만료, refreshToken 유효 시
 						//accessToken 재발급 알림
 						swal({
 							title: '401 Unauthorized, EXPIRED_ACC_TOKEN',

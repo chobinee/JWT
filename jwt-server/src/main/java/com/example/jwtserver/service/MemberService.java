@@ -29,8 +29,8 @@ public class MemberService {
 	 * @throws Exception
 	 */
 	public void join(MemberDto memberDto) throws Exception {
-		// 이미 db에 id가 있을 경우
 		if (memberRepository.existsById(memberDto.getId())) {
+		    // 이미 db에 id가 있을 경우
 			throw new Exception();
 
 		}
@@ -42,9 +42,9 @@ public class MemberService {
 			.admin(memberDto.isAdmin())
 			.build();
 
-		//member 저장
-		memberRepository.save(member);
-	}
+        //member 저장
+        memberRepository.save(member);
+    }
 
 	/**
 	 * login logic
@@ -53,18 +53,17 @@ public class MemberService {
 	 * @return token
 	 */
 	public String login(LoginRequestDto loginRequestDto, HttpServletResponse httpServletResponse) throws Exception {
-		try {
 			//loginRequestDto에 있는 id로 User 조회해서 받아옴
 			Member member = memberRepository.findMemberById(loginRequestDto.getId());
 
-			//없을 시 throw
 			if (member == null) {
+			    //없을 시 throw
 				throw new EntityNotFoundException();
 
 			}
 
-			//password 틀릴 시 throw
 			if (!passwordEncoder.matches(loginRequestDto.getPw(), member.getPw())) {
+			    //password 틀릴 시 throw
 				throw new EntityNotFoundException();
 
 			}
@@ -80,8 +79,8 @@ public class MemberService {
 			String accessToken = jwtUtil.generateToken(memberDto, "access");
 			String refreshToken = jwtUtil.generateToken(memberDto, "refresh");
 
-			//token null일 시
 			if (accessToken == null || refreshToken == null) {
+			    //token null일 시
 				throw new Exception("Token create error");
 
 			}
@@ -94,22 +93,18 @@ public class MemberService {
 			httpServletResponse.addCookie(cookie);
 
 			return accessToken;
-		} catch (Exception e) {
-			e.printStackTrace();
-
-			throw new IllegalArgumentException();
-		}
 	}
 
 	/**
+     * id로 memberDto 받아옴
 	 * @param userId
 	 * @return memberDto
 	 */
 	public MemberDto getMemberDtoById(String userId) throws EntityNotFoundException {
 		Member member = memberRepository.findMemberById(userId);
 
-		//member 못 받아올 경우 throw
 		if (member == null) {
+		    //member 못 받아올 경우 throw
 			throw new EntityNotFoundException();
 
 		}

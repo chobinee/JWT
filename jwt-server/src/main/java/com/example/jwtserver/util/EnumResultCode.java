@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * resultCode
+ * resultCode enum
  */
 @RequiredArgsConstructor
 @Getter

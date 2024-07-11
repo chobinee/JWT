@@ -41,21 +41,21 @@ public class JwtUtil {
 	public String generateToken(MemberDto memberDto, String type) throws IllegalArgumentException {
 		Date expiredDate = null;
 
-		//인자가 null 값으로 들어왔을 경우
 		if (memberDto == null || type == null) {
+		    //인자가 null 값으로 들어왔을 경우
 			throw new IllegalArgumentException("memberDto and type are required");
 
 		}
-		//accessToken일 경우
 		if ("access".equals(type)) {
+		    //accessToken일 경우
 			expiredDate = createTokenExpiredDate(Duration.ofSeconds(10));
 
-			//refreshToken일 경우
 		} else if ("refresh".equals(type)) {
+			//refreshToken일 경우
 			expiredDate = createTokenExpiredDate(Duration.ofSeconds(300));
 
-			//다른 type일 경우
 		} else {
+			//다른 type일 경우
 			throw new IllegalArgumentException("type is not valid");
 
 		}
@@ -82,8 +82,8 @@ public class JwtUtil {
 	public boolean isValidToken(String token) {
 		Claims claims = getClaimsFromToken(token);
 
-		// claims가 null일 경우 return null
 		if (claims == null) {
+		    // claims가 null일 경우 return null
 			return false;
 
 		}
@@ -142,6 +142,7 @@ public class JwtUtil {
 	 */
 	private Claims getClaimsFromToken(String token) {
 		try {
+            //token으로부터  claims 받아옴
 			Claims claims = Jwts.parserBuilder()
 				.setSigningKey(key)
 				.build()
@@ -179,8 +180,8 @@ public class JwtUtil {
 	 */
 	public String getUserIdFromToken(String token) {
 		Claims claims = getClaimsFromToken(token);
-		// claims가 null일 경우 return null
 		if (claims == null) {
+		    // claims가 null일 경우 return null
 			return null;
 
 		}
@@ -195,8 +196,8 @@ public class JwtUtil {
 	 */
 	public MemberDto getMemberDtoFromToken(String token) {
 		Claims claims = getClaimsFromToken(token);
-		// claims가 null일 경우 return null
 		if (claims == null) {
+		    // claims가 null일 경우 return null
 			return null;
 
 		}
