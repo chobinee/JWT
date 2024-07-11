@@ -1,24 +1,25 @@
 package com.example.jwtserver.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+/**
+ * Member entity
+ */
+@Entity //todo. setter 있나,,,?
 @NoArgsConstructor
 @Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 @Getter
 public class Member {
-  @Id
-  private String id;
-  private String pw;
-  private String name;
-  private boolean admin;
+	@Id
+	private String id;
+	private String pw;
+	private String name;
+	//@JsonIgnore //json 요청 보낼 때 제외 가능
+	private boolean admin;
 }

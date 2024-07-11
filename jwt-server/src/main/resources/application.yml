@@ -1,18 +1,30 @@
 spring:
-  application:
-    name: jwt-server
-  datasource:
-    url: jdbc:mariadb://localhost:3306/jwt_db
-    username: root
-    password: dbsafer00
-    driver-class-name: org.mariadb.jdbc.Driver
-  jpa:
-    hibernate:
-      ddl-auto: none
-    show-sql: true
+    application:
+        name: jwt-server
+    datasource:
+        url: jdbc:mariadb://localhost:3306/jwt_db
+        username: root
+        password: dbsafer00
+        driver-class-name: org.mariadb.jdbc.Driver
+    jpa:
+        hibernate:
+            ddl-auto: none
+        show-sql: true
+    cors:
+        allowed-origins:
+            - "http://localhost:5050"
+        allowed-methods:
+            - "GET"
+            - "POST"
+            - "PUT"
+            - "DELETE"
+        allowed-headers:
+            - "Authorization"
+            - "Content-Type"
+        allow-credentials: true
 logging:
-  level:
-    org.springframework.security: DEBUG
-    com.example.jwtserver.service.MemberService: DEBUG
-    com.example.jwtserver.filter.JwtAuthFilter: DEBUG
+    level:
+        org.springframework.security: DEBUG
+        com.example.jwtserver.service.MemberService: DEBUG
+        com.example.jwtserver.filter.JwtAuthFilter: DEBUG
 
