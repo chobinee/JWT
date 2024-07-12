@@ -42,12 +42,12 @@ public class JwtUtil {
 		Date expiredDate = null;
 
 		if (memberDto == null || type == null) {
-		    //인자가 null 값으로 들어왔을 경우
+			//인자가 null 값으로 들어왔을 경우
 			throw new IllegalArgumentException("memberDto and type are required");
 
 		}
 		if ("access".equals(type)) {
-		    //accessToken일 경우
+			//accessToken일 경우
 			expiredDate = createTokenExpiredDate(Duration.ofSeconds(10));
 
 		} else if ("refresh".equals(type)) {
@@ -56,7 +56,7 @@ public class JwtUtil {
 
 		} else {
 			//다른 type일 경우
-			throw new IllegalArgumentException("type is not valid"); //todo. 구체적인 exception throw
+			throw new IllegalArgumentException("type is not valid");
 
 		}
 
@@ -80,14 +80,14 @@ public class JwtUtil {
 	 * @return : 유효성(boolean)
 	 */
 	public boolean isValidToken(String token) {
-		Claims claims = getClaimsFromToken(token);
+		try {
+			Claims claims = getClaimsFromToken(token);
+			return true;
 
-		if (claims == null) {
-		    // claims가 null일 경우 return null
+		} catch (JwtException jwtException) {
 			return false;
 
 		}
-		return true;
 	}
 
 	/**
@@ -140,9 +140,9 @@ public class JwtUtil {
 	 * @param token
 	 * @return Claims, null
 	 */
-	private Claims getClaimsFromToken(String token) { // todo. 해당 메소드에서 예외처리 완료
+	private Claims getClaimsFromToken(String token) throws JwtException {
 		try {
-            //token으로부터  claims 받아옴
+			//token으로부터  claims 받아옴
 			Claims claims = Jwts.parserBuilder()
 				.setSigningKey(key)
 				.build()
@@ -169,7 +169,7 @@ public class JwtUtil {
 			log.error("Unexpected error", e);
 
 		}
-		return null;
+		throw new JwtException("Token is not valid");
 	}
 
 	/**
@@ -180,11 +180,6 @@ public class JwtUtil {
 	 */
 	public String getUserIdFromToken(String token) throws JwtException {
 		Claims claims = getClaimsFromToken(token);
-		if (claims == null) {
-		    // claims가 null일 경우 return null
-			throw new JwtException("Token is not valid, can not get user id");
-
-		}
 		return claims.get(USER_ID).toString();
 	}
 
@@ -196,11 +191,7 @@ public class JwtUtil {
 	 */
 	public MemberDto getMemberDtoFromToken(String token) throws JwtException {
 		Claims claims = getClaimsFromToken(token);
-		if (claims == null) {
-		    // claims가 null일 경우 return null
-			throw new JwtException("Token is not valid, can not get member");
 
-		}
 		//memberDto build
 		MemberDto memberDto = MemberDto.builder()
 			.id(claims.get(USER_ID).toString())

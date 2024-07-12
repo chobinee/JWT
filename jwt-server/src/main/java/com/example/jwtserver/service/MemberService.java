@@ -32,7 +32,7 @@ public class MemberService {
 	public void join(MemberDto memberDto) throws Exception {
 		if (memberRepository.existsById(memberDto.getId())) {
 		    // 이미 db에 id가 있을 경우
-			throw new EntityExistsException(); //todo.
+			throw new EntityExistsException();
 
 		}
 		//member build
@@ -59,7 +59,7 @@ public class MemberService {
 
 			if (member == null) {
 			    //없을 시 throw
-				throw new EntityNotFoundException(); //todo.
+				throw new EntityNotFoundException();
 
 			}
 

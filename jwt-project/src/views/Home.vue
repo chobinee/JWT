@@ -39,8 +39,8 @@ export default {
 				withCredentials: true
 			}).then((res) => {
 				//response가 있을 경우
-				// status가 200이면 data return
 				if (res.status === 200) {
+					// status가 200이면 data return
 					return res.data;
 
 				} else {
