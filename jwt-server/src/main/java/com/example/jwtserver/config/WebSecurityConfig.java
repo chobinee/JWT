@@ -32,7 +32,7 @@ public class WebSecurityConfig {
 	 * @return 설정한 source
 	 */
 	@Bean
-	public CorsConfigurationSource corsConfigurationSource() { //cors 설정
+	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(Arrays.asList("http://localhost:5050"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));

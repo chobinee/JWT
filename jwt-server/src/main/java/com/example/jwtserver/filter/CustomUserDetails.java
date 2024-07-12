@@ -44,11 +44,6 @@ public class CustomUserDetails implements UserDetails {
 		return member.getName();
 	}
 
-	public boolean isAdmin() {
-		return member.isAdmin();
-	}
-
-
 	@Override
 	public boolean isAccountNonExpired() {
 		return true;

@@ -62,9 +62,9 @@ public class MemberController {
 		try {
 			// login
 			String token = memberService.login(loginRequestDto, httpServletResponse);
-
 			//정상일 경우
 			return ResponseEntity.status(HttpStatus.OK).body(token);
+
 		} catch (EntityNotFoundException EntityNotFoundException) {
 			// member를 못 찾았을 경우 204
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

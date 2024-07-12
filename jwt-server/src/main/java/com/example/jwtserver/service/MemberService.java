@@ -6,6 +6,7 @@ import com.example.jwtserver.repository.MemberRepository;
 import com.example.jwtserver.entity.Member;
 import com.example.jwtserver.util.JwtUtil;
 import io.jsonwebtoken.JwtException;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Cookie;
@@ -31,7 +32,7 @@ public class MemberService {
 	public void join(MemberDto memberDto) throws Exception {
 		if (memberRepository.existsById(memberDto.getId())) {
 		    // 이미 db에 id가 있을 경우
-			throw new Exception();
+			throw new EntityExistsException(); //todo.
 
 		}
 		//member build
@@ -58,7 +59,7 @@ public class MemberService {
 
 			if (member == null) {
 			    //없을 시 throw
-				throw new EntityNotFoundException();
+				throw new EntityNotFoundException(); //todo.
 
 			}
 
@@ -105,7 +106,7 @@ public class MemberService {
 
 		if (member == null) {
 		    //member 못 받아올 경우 throw
-			throw new EntityNotFoundException();
+			throw new EntityNotFoundException(); //todo.
 
 		}
 

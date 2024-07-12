@@ -56,7 +56,7 @@ public class JwtUtil {
 
 		} else {
 			//다른 type일 경우
-			throw new IllegalArgumentException("type is not valid");
+			throw new IllegalArgumentException("type is not valid"); //todo. 구체적인 exception throw
 
 		}
 
@@ -140,7 +140,7 @@ public class JwtUtil {
 	 * @param token
 	 * @return Claims, null
 	 */
-	private Claims getClaimsFromToken(String token) {
+	private Claims getClaimsFromToken(String token) { // todo. 해당 메소드에서 예외처리 완료
 		try {
             //token으로부터  claims 받아옴
 			Claims claims = Jwts.parserBuilder()
@@ -178,11 +178,11 @@ public class JwtUtil {
 	 * @param token
 	 * @return claims, null
 	 */
-	public String getUserIdFromToken(String token) {
+	public String getUserIdFromToken(String token) throws JwtException {
 		Claims claims = getClaimsFromToken(token);
 		if (claims == null) {
 		    // claims가 null일 경우 return null
-			return null;
+			throw new JwtException("Token is not valid, can not get user id");
 
 		}
 		return claims.get(USER_ID).toString();
@@ -194,11 +194,11 @@ public class JwtUtil {
 	 * @param token
 	 * @return memberDto, null
 	 */
-	public MemberDto getMemberDtoFromToken(String token) {
+	public MemberDto getMemberDtoFromToken(String token) throws JwtException {
 		Claims claims = getClaimsFromToken(token);
 		if (claims == null) {
 		    // claims가 null일 경우 return null
-			return null;
+			throw new JwtException("Token is not valid, can not get member");
 
 		}
 		//memberDto build
